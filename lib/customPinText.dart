@@ -7,9 +7,8 @@ const MAX_PIN_LENGTH = 5;
 
 class CustomPinText extends StatefulWidget {
   final Color errorBorderColor;
-  final  onPinEntered;
 
-  CustomPinText({Key key, this.pinLength, this.errorBorderColor,    this.onPinEntered})
+  CustomPinText({Key key, this.pinLength, this.errorBorderColor})
       : super(key: key);
 
   final int pinLength;
@@ -63,11 +62,11 @@ class _CustomPinTextState extends State<CustomPinText> {
                     gotoNextFocus(focusNodes[index], index, true);
                   },
                   onChanged: (text) {
-                    pinData[index] = text;
+
                     if (text.isEmpty && index != 0) {
                       gotoNextFocus(focusNodes[index], index, false);
                     } else if (!text.isEmpty && index != widget.pinLength) {
-                      widget.onPinEntered(pinData.join().trim());
+
                       gotoNextFocus(focusNodes[index], index, true);
                     }
                   },

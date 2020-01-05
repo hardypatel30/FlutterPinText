@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/customPinText.dart';
-import 'package:separated_number_input_formatter/separated_number_input_formatter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:pin_code_text_field/pin_code_text_field.dart';
 import 'package:multi_masked_formatter/multi_masked_formatter.dart';
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -67,10 +62,22 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          TextField(
+            inputFormatters: [
+              MultiMaskedTextInputFormatter(
+                  masks: ['xxx-xxxx-xxxxxxx-x'], separator: '-')
+            ],
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            decoration:
+            InputDecoration(
+                labelText: 'PhoneNumber',
+                hintText: '010-123-4567 or 010-1234-5678'),
+          ),
           CustomPinText(
               pinLength: 5,
               errorBorderColor: Colors.red,
-              onPinEntered: (data) => onPinEntered1(data)),
+          )
         ],
       ),
     );

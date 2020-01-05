@@ -32,7 +32,7 @@ dev_dependencies:
     sdk: flutter
 
   pin_code_text_field: 1.5.1
-  separated_number_input_formatter: 0.0.2
+
   multi_masked_formatter: 0.1.1
 
 
