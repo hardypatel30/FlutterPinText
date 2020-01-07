@@ -20,14 +20,17 @@ class CustomPinText extends StatefulWidget {
       this.focusBorderColor,
       this.normalBorderColor,
       this.isError})
-      : super(key: key){
-    print(' initState called  constructor'+ isError.toString());
+      : super(key: key) {
+    print(' initState called  constructor' + isError.toString());
   }
 
   final int pinLength;
 
   @override
-  _CustomPinTextState createState() => _CustomPinTextState();
+  _CustomPinTextState createState() {
+    print(' initState called  createState ' + isError.toString());
+    return _CustomPinTextState(this.isError);
+  }
 }
 
 class _CustomPinTextState extends State<CustomPinText> {
@@ -36,8 +39,31 @@ class _CustomPinTextState extends State<CustomPinText> {
   FocusNode curr;
   List<Widget> fields = List();
   List<String> pinData = [];
+  final bool isErroree;
 
+  _CustomPinTextState(this.isErroree);
 
+  @override
+  void initState() {
+    print(' initState called  widget' + widget.isError.toString());
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(CustomPinText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) => Container(
+        child: generatePinItem(),
+        width: MediaQuery.of(context).size.width,
+      );
 
   Widget generatePinItem() {
     if (listController.isEmpty) {
@@ -59,8 +85,7 @@ class _CustomPinTextState extends State<CustomPinText> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       counterText: "",
-                      errorText: widget.isError ? '' : null,
-
+                      errorText: this.isErroree ? '' : null,
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(4)),
                         borderSide: BorderSide(
@@ -114,7 +139,6 @@ class _CustomPinTextState extends State<CustomPinText> {
   }
 
   gotoNextFocus(FocusNode currentFocus, int currentIndex, bool isNext) {
-
     pinData[currentIndex] = listController[currentIndex].text.toString();
     widget.onPinEntered1(pinData.join().toString());
 
@@ -123,16 +147,4 @@ class _CustomPinTextState extends State<CustomPinText> {
     FocusScope.of(context).requestFocus(focusNodes[nextFocus]);
     curr = focusNodes[nextFocus];
   }
-
-  @override
-  void initState() {
-    print(' initState called  widget'+widget.isError.toString());
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) => Container(
-        child: generatePinItem(),
-        width: MediaQuery.of(context).size.width,
-      );
 }
