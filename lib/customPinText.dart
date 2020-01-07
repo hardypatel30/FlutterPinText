@@ -1,15 +1,28 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 const MAX_PIN_LENGTH = 5;
 
 class CustomPinText extends StatefulWidget {
   final Color errorBorderColor;
+  final Color focusBorderColor;
+  final Color normalBorderColor;
+  final bool isError;
+  Function(String pinText) onPinEntered1;
 
-  CustomPinText({Key key, this.pinLength, this.errorBorderColor})
-      : super(key: key);
+  CustomPinText(
+      {Key key,
+      this.pinLength,
+      this.errorBorderColor,
+      this.onPinEntered1,
+      this.focusBorderColor,
+      this.normalBorderColor,
+      this.isError})
+      : super(key: key){
+    print(' initState called  constructor'+ isError.toString());
+  }
 
   final int pinLength;
 
@@ -18,61 +31,75 @@ class CustomPinText extends StatefulWidget {
 }
 
 class _CustomPinTextState extends State<CustomPinText> {
-  TextEditingController controller = TextEditingController(text: "");
-  String thisText = "";
-
-  bool hasError = false;
-  String errorMessage;
-
   List<TextEditingController> listController = [];
   List<FocusNode> focusNodes = [];
   FocusNode curr;
   List<Widget> fields = List();
   List<String> pinData = [];
 
+
+
   Widget generatePinItem() {
     if (listController.isEmpty) {
       listController = List<TextEditingController>.generate(
-          widget.pinLength, (i) => TextEditingController(text: " "));
+          widget.pinLength, (i) => TextEditingController());
+
+      pinData = List<String>.generate(widget.pinLength, (i) => "");
       focusNodes =
           List<FocusNode>.generate(widget.pinLength, (i) => FocusNode());
 
       for (int index = 0; index < widget.pinLength; ++index) {
-        print("Focus Assigned :: " + index.toString());
         fields.add(
           Expanded(
-            child: Container(
-              height: 120,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.green, width: 2.0)),
-              child: Center(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    counterText: "",
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                  ),
-                  textAlign: TextAlign.center,
-                  focusNode: focusNodes[index],
-                  maxLength: 1,
-                  enableInteractiveSelection: false,
-                  onFieldSubmitted: (term) {
-                    print('submitCalled');
-                    gotoNextFocus(focusNodes[index], index, true);
-                  },
-                  onChanged: (text) {
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Container(
+                height: 120,
+                child: Center(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      counterText: "",
+                      errorText: widget.isError ? '' : null,
 
-                    if (text.isEmpty && index != 0) {
-                      gotoNextFocus(focusNodes[index], index, false);
-                    } else if (!text.isEmpty && index != widget.pinLength) {
-
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                        borderSide: BorderSide(
+                            width: 3, color: widget.focusBorderColor),
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                          borderSide: BorderSide(
+                              width: 1, color: widget.normalBorderColor)),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                        borderSide: BorderSide(
+                            width: 3, color: widget.focusBorderColor),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                          borderSide: BorderSide(
+                              width: 2, color: widget.errorBorderColor)),
+                    ),
+                    textAlign: TextAlign.center,
+                    controller: listController[index],
+                    focusNode: focusNodes[index],
+                    maxLength: 1,
+                    keyboardType: TextInputType.phone,
+                    enableInteractiveSelection: false,
+                    onFieldSubmitted: (term) {
                       gotoNextFocus(focusNodes[index], index, true);
-                    }
-                  },
-                  textInputAction: index == widget.pinLength - 1
-                      ? TextInputAction.done
-                      : TextInputAction.next,
+                    },
+                    onChanged: (text) {
+                      if (text.isEmpty && index != 0) {
+                        gotoNextFocus(focusNodes[index], index, false);
+                      } else if (text.isNotEmpty && index != widget.pinLength) {
+                        gotoNextFocus(focusNodes[index], index, true);
+                      }
+                    },
+                    textInputAction: index == widget.pinLength - 1
+                        ? TextInputAction.done
+                        : TextInputAction.next,
+                  ),
                 ),
               ),
             ),
@@ -83,27 +110,29 @@ class _CustomPinTextState extends State<CustomPinText> {
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
-        verticalDirection: VerticalDirection.down,
         children: fields);
   }
 
   gotoNextFocus(FocusNode currentFocus, int currentIndex, bool isNext) {
+
+    pinData[currentIndex] = listController[currentIndex].text.toString();
+    widget.onPinEntered1(pinData.join().toString());
+
     focusNodes[currentIndex].unfocus(focusPrevious: false);
-
     int nextFocus = isNext ? currentIndex + 1 : currentIndex - 1;
-
     FocusScope.of(context).requestFocus(focusNodes[nextFocus]);
     curr = focusNodes[nextFocus];
   }
 
   @override
   void initState() {
+    print(' initState called  widget'+widget.isError.toString());
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
-    print('Focus Build Called');
-    return generatePinItem();
-  }
+  Widget build(BuildContext context) => Container(
+        child: generatePinItem(),
+        width: MediaQuery.of(context).size.width,
+      );
 }
