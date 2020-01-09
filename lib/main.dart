@@ -65,19 +65,17 @@ class _MyHomePageState extends State<MyHomePage> {
           StreamBuilder(
             initialData: false,
             stream: streamError.stream,
-            builder: (context, snapshot) {
-              print(' initState called  snapSHot' + snapshot.data.toString());
-              return Expanded(
-                child: CustomPinText(
-                  pinLength: 4,
-                  errorBorderColor: Colors.red,
-                  focusBorderColor: Colors.green,
-                  normalBorderColor: Colors.black,
-                  onPinEntered1: onPinEntered2,
-                  isError: snapshot.data,
-                ),
-              );
-            },
+            builder: (context, snapshot) => Expanded(
+              child: CustomPinText(
+                pinLength: 4,
+                showHint: true,
+                errorBorderColor: Colors.red,
+                focusBorderColor: Colors.green,
+                normalBorderColor: Colors.black,
+                onPinEntered1: onPinEntered2,
+                isError: hasError,
+              ),
+            ),
           ),
         ],
       ),
